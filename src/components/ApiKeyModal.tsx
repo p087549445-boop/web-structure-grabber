@@ -74,8 +74,8 @@ export const ApiKeyModal = ({ isOpen, onClose, onApiKeySet }: ApiKeyModalProps) 
             </DialogTitle>
           </div>
           <DialogDescription className="text-muted-foreground font-mono">
-            Untuk menggunakan data asli, Anda perlu API key dari Firecrawl. 
-            API ini akan digunakan untuk scraping website secara real-time.
+            Saat ini menggunakan demo mode. Untuk scraping real-time, 
+            Anda perlu mengimplementasikan backend API dengan Firecrawl.
           </DialogDescription>
         </DialogHeader>
 
@@ -100,14 +100,14 @@ export const ApiKeyModal = ({ isOpen, onClose, onApiKeySet }: ApiKeyModalProps) 
 
           <div className="bg-code-bg p-4 rounded-lg border border-primary/20">
             <h4 className="text-sm font-mono font-semibold text-terminal-cyan mb-2">
-              📖 Cara mendapatkan API Key:
+              📖 Mode Demo Saat Ini:
             </h4>
-            <ol className="text-xs text-muted-foreground font-mono space-y-1 list-decimal list-inside">
-              <li>Buka <strong className="text-terminal-green">firecrawl.dev</strong></li>
-              <li>Buat akun atau login</li>
-              <li>Buka dashboard dan ambil API key</li>
-              <li>Copy dan paste di form ini</li>
-            </ol>
+            <ul className="text-xs text-muted-foreground font-mono space-y-1 list-disc list-inside">
+              <li>Menggunakan demo data untuk simulasi</li>
+              <li>Untuk data asli, implementasikan backend API</li>
+              <li>Firecrawl SDK memerlukan server-side integration</li>
+              <li>Format: <code>fc-xxxxxxxxxx</code> (demo validation)</li>
+            </ul>
             <Button
               type="button"
               variant="outline"

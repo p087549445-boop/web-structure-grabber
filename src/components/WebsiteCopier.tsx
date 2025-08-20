@@ -217,7 +217,7 @@ export const WebsiteCopier = () => {
             Website Code Copier
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Scrape <strong>data asli</strong> dari website mana pun dengan struktur folder lengkap menggunakan <strong>Firecrawl API</strong>
+            Demo scraping website dengan struktur folder lengkap. <strong>Untuk data asli, implementasikan backend API.</strong>
           </p>
         </div>
 
@@ -233,7 +233,7 @@ export const WebsiteCopier = () => {
               ) : (
                 <>
                   <AlertCircle className="w-5 h-5 text-terminal-orange" />
-                  <span className="font-mono text-sm text-terminal-orange">API Key: Belum dikonfigurasi</span>
+                  <span className="font-mono text-sm text-terminal-orange">Mode: Demo (Backend diperlukan untuk data asli)</span>
                 </>
               )}
             </div>
@@ -292,7 +292,7 @@ export const WebsiteCopier = () => {
                   ) : (
                     <>
                       <Zap className="w-4 h-4 mr-2" />
-                      Scrape Real Data
+                      Demo Scrape
                     </>
                   )}
                 </Button>
@@ -309,14 +309,14 @@ export const WebsiteCopier = () => {
               </div>
             )}
             
-            {!hasApiKey && (
-              <div className="bg-terminal-orange/10 border border-terminal-orange/20 rounded-lg p-4">
-                <div className="flex items-center gap-2 text-terminal-orange font-mono text-sm">
-                  <Key className="w-4 h-4" />
-                  <span>Untuk menggunakan data asli, Anda perlu setup Firecrawl API key terlebih dahulu</span>
-                </div>
+            <div className="bg-blue-500/10 border border-blue-500/20 rounded-lg p-4">
+              <div className="flex items-center gap-2 text-blue-400 font-mono text-sm">
+                <AlertCircle className="w-4 h-4" />
+                <span>
+                  <strong>Demo Mode:</strong> Untuk scraping real-time, implementasikan backend API dengan Firecrawl SDK
+                </span>
               </div>
-            )}
+            </div>
           </form>
         </Card>
 
