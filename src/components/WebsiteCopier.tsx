@@ -42,6 +42,8 @@ interface ScrapedContent {
 }
 
 export const WebsiteCopier = () => {
+  console.log('WebsiteCopier component is rendering...');
+  
   const [url, setUrl] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -51,6 +53,8 @@ export const WebsiteCopier = () => {
   const [showApiKeyModal, setShowApiKeyModal] = useState(false);
   const [hasApiKey, setHasApiKey] = useState(false);
   const { toast } = useToast();
+  
+  console.log('Component state:', { url, isLoading, hasApiKey, scrapedContent });
 
   useEffect(() => {
     // Check if user already has API key
