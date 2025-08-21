@@ -1,5 +1,5 @@
-// Mock Firecrawl Service for Browser Compatibility
-// Note: Real Firecrawl implementation requires server-side API calls
+// Real Firecrawl Service using Supabase Edge Functions
+import { supabase } from "@/integrations/supabase/client";
 
 interface FileItem {
   name: string;
@@ -29,13 +29,19 @@ export class FirecrawlService {
 
   static async testApiKey(apiKey: string): Promise<boolean> {
     try {
-      console.log('Testing API key dengan mock validation');
-      // Mock validation - in real implementation, this would call backend
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      console.log('Testing API key dengan Firecrawl API asli');
       
-      // Basic validation - check if it looks like a valid API key
-      const isValidFormat = apiKey.startsWith('fc-') && apiKey.length > 10;
-      return isValidFormat;
+      // Test dengan scraping sederhana
+      const { data, error } = await supabase.functions.invoke('firecrawl-scrape', {
+        body: { url: 'https://example.com' }
+      });
+
+      if (error) {
+        console.error('Error testing API key:', error);
+        return false;
+      }
+
+      return data?.success === true;
     } catch (error) {
       console.error('Error testing API key:', error);
       return false;
@@ -52,41 +58,34 @@ export class FirecrawlService {
   }> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      return { success: false, error: 'API key tidak ditemukan' };
+      return { success: false, error: 'API key tidak ditemukan. Silakan atur API key Firecrawl Anda terlebih dahulu.' };
     }
 
     try {
-      console.log('Melakukan scraping dengan fetch API untuk URL:', url);
+      console.log('Melakukan scraping dengan Firecrawl API asli untuk URL:', url);
       
-      // Use browser fetch API to get basic HTML content
-      const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(url)}`);
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const data = await response.json();
-      const html = data.contents || '';
-      
-      // Generate markdown from HTML (basic conversion)
-      const markdown = this.htmlToMarkdown(html, url);
-      
-      // Generate struktur file berdasarkan konten yang di-scrape
-      const fileStructure = this.generateFileStructure({ html, markdown }, url);
+      // Call Supabase Edge Function untuk scraping
+      const { data, error } = await supabase.functions.invoke('firecrawl-scrape', {
+        body: { url }
+      });
 
-      return { 
-        success: true,
-        data: { html, markdown },
-        html: html,
-        markdown: markdown,
-        fileStructure: fileStructure
-      };
+      if (error) {
+        console.error('Error calling firecrawl-scrape function:', error);
+        throw new Error(`Function error: ${error.message}`);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Scraping gagal');
+      }
+
+      console.log('Scraping berhasil menggunakan Firecrawl API');
+      return data;
     } catch (error) {
       console.error('Error selama scraping:', error);
-      
-      // Fallback with demo data if fetch fails
-      console.log('Menggunakan demo data sebagai fallback');
-      return this.getDemoData(url);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Gagal melakukan scraping website' 
+      };
     }
   }
 
@@ -94,38 +93,69 @@ export class FirecrawlService {
     success: boolean;
     error?: string;
     data?: any;
+    jobId?: string;
   }> {
     const apiKey = this.getApiKey();
     if (!apiKey) {
-      return { success: false, error: 'API key tidak ditemukan' };
+      return { success: false, error: 'API key tidak ditemukan. Silakan atur API key Firecrawl Anda terlebih dahulu.' };
     }
 
     try {
-      console.log('Melakukan crawling website dengan mock implementation');
+      console.log('Memulai crawling website dengan Firecrawl API asli untuk URL:', url);
       
-      // Mock crawling - in real implementation, this would be a backend call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
-      const mockCrawlData = {
-        total: 15,
-        completed: 15,
-        creditsUsed: 5,
-        data: [
-          { url: url, content: 'Mock crawled content 1' },
-          { url: `${url}/about`, content: 'Mock crawled content 2' },
-          { url: `${url}/contact`, content: 'Mock crawled content 3' }
-        ]
-      };
+      // Call Supabase Edge Function untuk crawling
+      const { data, error } = await supabase.functions.invoke('firecrawl-crawl', {
+        body: { url }
+      });
 
-      return { 
-        success: true,
-        data: mockCrawlData
-      };
+      if (error) {
+        console.error('Error calling firecrawl-crawl function:', error);
+        throw new Error(`Function error: ${error.message}`);
+      }
+
+      if (!data?.success) {
+        throw new Error(data?.error || 'Crawling gagal');
+      }
+
+      console.log('Crawling dimulai dengan job ID:', data.jobId);
+      return data;
     } catch (error) {
       console.error('Error selama crawl:', error);
       return { 
         success: false, 
-        error: error instanceof Error ? error.message : 'Gagal melakukan crawl' 
+        error: error instanceof Error ? error.message : 'Gagal melakukan crawl website' 
+      };
+    }
+  }
+
+  static async getCrawlStatus(jobId: string): Promise<{
+    success: boolean;
+    error?: string;
+    status?: string;
+    completed?: number;
+    total?: number;
+    creditsUsed?: number;
+    data?: any[];
+  }> {
+    try {
+      console.log('Mengecek status crawling untuk job:', jobId);
+      
+      // Call Supabase Edge Function untuk status check
+      const { data, error } = await supabase.functions.invoke('firecrawl-status', {
+        body: { jobId }
+      });
+
+      if (error) {
+        console.error('Error calling firecrawl-status function:', error);
+        throw new Error(`Function error: ${error.message}`);
+      }
+
+      return data;
+    } catch (error) {
+      console.error('Error mengecek status crawl:', error);
+      return { 
+        success: false, 
+        error: error instanceof Error ? error.message : 'Gagal mengecek status crawl' 
       };
     }
   }
